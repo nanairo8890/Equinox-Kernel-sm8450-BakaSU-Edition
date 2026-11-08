@@ -2,62 +2,76 @@ Language: English
 
 # Equinox Kernel BakaSU Edition: Changelog
 
-Edition by Nanairo8890, with permission from LF52406. Based on Equinox Kernel 5.10.269 for the POCO F5 Pro / Redmi K60 (`mondrian`).
-Problems with this edition: report them to Nanairo8890, not to LF52406 or the BakaSU developers.
+Edition by Nanairo8890, with permission from LF52406
+Based on Equinox Kernel 5.10.269 for the POCO F5 Pro / Redmi K60 (`mondrian`)
+Problems with this edition: report them to Nanairo8890, not to LF52406 or the BakaSU developers
 
 ---
 
 ## 1.8 (2026-11-04)
 
-First release of the BakaSU edition: the kernel of the Equinox FinaSU Edition 1.8 with BakaSU instead of FinaSU as the root driver. SUSFS, NoMount, DroidSpaces, BBR, the build and the installer are the same. The release also has the package as `Equinox-5.10.269-BakaSU-1.8-mondrian-checkonly.zip`, which only runs the check.
+First release of the BakaSU edition: the kernel of the Equinox FinaSU Edition 1.8 with BakaSU instead of FinaSU as the root driver
+SUSFS, NoMount, DroidSpaces, BBR, the build and the installer are the same
+The release also has the package as `Equinox-5.10.269-BakaSU-1.8-mondrian-checkonly.zip`, which only runs the check
 
 **Root: BakaSU**
-- BakaSU (formerly ReSukiSU, a fork of KernelSU by tiann) instead of KernelSU-Next, as the `KernelSU/` submodule at `516d3e87` (`main`, `v4.2.0-rc3-86`, version 35257), built into the kernel. BakaSU uses UAPI 6.
-- Use the BakaSU manager 35257 from the release (`BakaSU_v4.2.0-rc3_35257-arm64-v8a-release.apk`, package `com.resukisu.resukisu`), built by BakaSU's CI from the same commit, or a newer one. The kernel trusts the official BakaSU signature, which is built into BakaSU.
-- Hooks: BakaSU's SUSFS Inline Hook method, the one BakaSU uses on kernels patched with SUSFS. SUSFS's hook keys (`ksu_is_input_hook_enabled`, `ksu_is_init_rc_hook_enabled`) stay `static_key_true`, as SUSFS declares them and BakaSU defines them; the FinaSU edition changes them to `static_key_false` because FinaSU defines them that way.
-- BakaSU's module preinit is built in.
-- The installer shows BakaSU v4.2.0-rc3 (35257).
+- BakaSU (formerly ReSukiSU, a fork of KernelSU by tiann) instead of KernelSU-Next, as the `KernelSU/` submodule at `516d3e87` (`main`, `v4.2.0-rc3-86`, version 35257), built into the kernel
+  BakaSU uses UAPI 6
+- Use the BakaSU manager 35257 from the release (`BakaSU_v4.2.0-rc3_35257-arm64-v8a-release.apk`, package `com.resukisu.resukisu`), built by BakaSU's CI from the same commit, or a newer one
+  The kernel trusts the official BakaSU signature, which is built into BakaSU
+- Hooks: BakaSU's SUSFS Inline Hook method, the one BakaSU uses on kernels patched with SUSFS
+  SUSFS's hook keys (`ksu_is_input_hook_enabled`, `ksu_is_init_rc_hook_enabled`) stay `static_key_true`, as SUSFS declares them and BakaSU defines them; the FinaSU edition changes them to `static_key_false` because FinaSU defines them that way
+- BakaSU's module preinit is built in
+- The installer shows BakaSU v4.2.0-rc3 (35257)
 
 **SUSFS**
-- `eb95da0` (v2.3.0) from simonpunk's `gki-android12-5.10` branch, through BakaSU's SUSFS support; the same as the FinaSU edition.
-- SUSFS's priority filter (`set_priority_uid_filter`, "Hide third party apps" in BRENE) has no effect, because BakaSU does not dispatch that command either. BRENE v0.0.75 counts 10 kernel features and will see 9 here.
+- `eb95da0` (v2.3.0) from simonpunk's `gki-android12-5.10` branch, through BakaSU's SUSFS support; the same as the FinaSU edition
+- SUSFS's priority filter (`set_priority_uid_filter`, "Hide third party apps" in BRENE) has no effect, because BakaSU does not dispatch that command either
+  BRENE v0.0.75 counts 10 kernel features and will see 9 here
 
 **NoMount**
-- NoMount v2.2.0 by maxsteeel built in (`fs/nomount`, `CONFIG_NOMOUNT=y`, commit `bf1847f`), with deref3046's fix, as in the FinaSU edition. BakaSU has no built-in NoMount backend, so use it with the official NoMount metamodule (v2.2.0 or newer), which detects the built-in driver and does not load its own module.
-- Three edition-specific NoMount changes are kept: apps whose modules BakaSU/SUSFS unmount see the original system, there is no `/sys/module/nomount/version` (`nm version` still works), and SUSFS's kallsyms filter hides NoMount symbols.
+- NoMount v2.2.0 by maxsteeel built in (`fs/nomount`, `CONFIG_NOMOUNT=y`, commit `bf1847f`), with deref3046's fix, as in the FinaSU edition
+  BakaSU has no built-in NoMount backend, so use it with the official NoMount metamodule (v2.2.0 or newer), which detects the built-in driver and does not load its own module
+- Three edition-specific NoMount changes are kept: apps whose modules BakaSU/SUSFS unmount see the original system, there is no `/sys/module/nomount/version` (`nm version` still works), and SUSFS's kallsyms filter hides NoMount symbols
 
 **Symbols hidden from /proc/kallsyms**
-- The filter of the FinaSU edition 1.8 already covers most of the KernelSU-family names that BakaSU shares: `crown_manager`, `apk_sign*`, `dynamic_manager*`, `selinux_hide*`, `sulog_*`, `kernel_umount*`, the supercall `do_get_`/`do_set_` handlers, the hook machinery and so on.
-- Added for BakaSU, which has symbols that FinaSU does not: `is_manager`, `kernel_patch_type`, `manage_try_umount`, the `do_get_managers`, `do_get_hook_type`, `do_dynamic_manager` and `do_get_kernel_patch_implement` supercall handlers, `disable_seccomp`, `has_v1_signature_file`, `detect_conflict_thread`, `kAdbd` and the `block_modules` parameter string (182 prefixes in all).
-- Each added prefix was checked against a clean Equinox build and against the vendor modules of MistOS 20261025 and Infinity-X 4.1, which also appear in `/proc/kallsyms`: none matches. Symbols with generic names (`add_rule`, `cache_sid`, `count`, and so on) are left alone, as in the FinaSU edition, because hiding them by prefix could also hide legitimate kernel symbols.
+- The filter of the FinaSU edition 1.8 already covers most of the KernelSU-family names that BakaSU shares: `crown_manager`, `apk_sign*`, `dynamic_manager*`, `selinux_hide*`, `sulog_*`, `kernel_umount*`, the supercall `do_get_`/`do_set_` handlers, the hook machinery and so on
+- Added for BakaSU, which has symbols that FinaSU does not: `is_manager`, `kernel_patch_type`, `manage_try_umount`, the `do_get_managers`, `do_get_hook_type`, `do_dynamic_manager` and `do_get_kernel_patch_implement` supercall handlers, `disable_seccomp`, `has_v1_signature_file`, `detect_conflict_thread`, `kAdbd` and the `block_modules` parameter string (182 prefixes in all)
+- Each added prefix was checked against a clean Equinox build and against the vendor modules of MistOS 20261025 and Infinity-X 4.1, which also appear in `/proc/kallsyms`: none matches
+  Symbols with generic names (`add_rule`, `cache_sid`, `count`, and so on) are left alone, as in the FinaSU edition, because hiding them by prefix could also hide legitimate kernel symbols
 
 **Same as the FinaSU Edition 1.8**
-- Linux 5.10.269 with Equinox's mondrian config, DroidSpaces with Equinox's KMI-safe profile and its SYSVIPC/POSIX_MQUEUE KMI relocations, Goodix touch fixes, Clang CFI and MODVERSIONS.
-- BBR as the default TCP congestion control (CUBIC is still available and can be switched at runtime).
-- Built with AOSP Clang (`clang-r584948`) and ThinLTO.
-- The installer checks the ROM's vendor modules from `vendor_boot` and `vendor_dlkm` with `kmicheck` against the kernel's own symbol table before writing anything, and stops if any module would be rejected. A zip whose name contains `nocheck` skips the check; one whose name contains `checkonly` only runs the check and flashes nothing.
-- `/proc/version` shows `Nanairo@Equinox`. SUSFS's `set_uname` only changes what `uname` returns.
+- Linux 5.10.269 with Equinox's mondrian config, DroidSpaces with Equinox's KMI-safe profile and its SYSVIPC/POSIX_MQUEUE KMI relocations, Goodix touch fixes, Clang CFI and MODVERSIONS
+- BBR as the default TCP congestion control (CUBIC is still available and can be switched at runtime)
+- Built with AOSP Clang (`clang-r584948`) and ThinLTO
+- The installer checks the ROM's vendor modules from `vendor_boot` and `vendor_dlkm` with `kmicheck` against the kernel's own symbol table before writing anything, and stops if any module would be rejected
+  A zip whose name contains `nocheck` skips the check; one whose name contains `checkonly` only runs the check and flashes nothing
+- `/proc/version` shows `Nanairo@Equinox`
+  SUSFS's `set_uname` only changes what `uname` returns
 
 **If you use BRENE**
-- Do not configure SUSFS from the BakaSU manager while you use BRENE: both write the same settings and the last one wins.
-- BRENE applies `su_compat`, `kernel_umount` and `selinux_hide` again on every boot; change those switches from its WebUI.
-- If `uname -r` shows a double hyphen (`5.10.269--N-g...`), that comes from BRENE: it builds the spoofed name from a KMI value it cannot find in this kernel. Set a custom uname in BRENE to fix it.
+- Do not configure SUSFS from the BakaSU manager while you use BRENE: both write the same settings and the last one wins
+- BRENE applies `su_compat`, `kernel_umount` and `selinux_hide` again on every boot; change those switches from its WebUI
+- If `uname -r` shows a double hyphen (`5.10.269--N-g...`), that comes from BRENE: it builds the spoofed name from a KMI value it cannot find in this kernel
+  Set a custom uname in BRENE to fix it
 
 **Verified**
-- KMI against clean Equinox: 0 changed CRCs and 0 removed symbols (only `put_pid_ns` is added). The exported symbols and their CRCs (`vmlinux.symvers`, 14610 exports) are identical to the FinaSU edition 1.8, so the same ROMs are compatible.
-- Vendor module CRCs match (337 `vendor_boot` and 390 `vendor_dlkm` modules) for MistOS 5.1 Beta 20261025 (the same modules as 20261024 and 20261023), Project Infinity-X 4.1, MistOS 5.0 Alpha 20260914 and the latest builds from Keosh; AOSPA and PenguinOS are not compatible.
-- Build: BakaSU 35257 with SUSFS Inline hooks (BakaSU finds all seven SUSFS hooks: execveat, faccessat, input, setresuid, stat, read and reboot) and SUSFS's SELinux-hiding hook, SUSFS v2.3.0, and the module preinit runner built in.
-- **Tested on the phone** (POCO F5 Pro, MistOS 5.1 Beta 20261025) by booting this kernel with `fastboot boot`, without flashing it: boots, 385 modules loaded and 0 rejected, root works, SELinux Enforcing, no panics or warnings, BakaSU 35257 built in (UAPI 6), NoMount loaded (`nm version` 22), SUSFS v2.3.0 with its 9 features, BBR, and `/proc/kallsyms` returns 0 for every root-revealing name.
-- The BakaSU manager app was not installed on the test phone, so the kernel was checked from the shell; the manager itself was not tried with this kernel.
+- KMI against clean Equinox: 0 changed CRCs and 0 removed symbols (only `put_pid_ns` is added)
+  The exported symbols and their CRCs (`vmlinux.symvers`, 14610 exports) are identical to the FinaSU edition 1.8, so the same ROMs are compatible
+- Vendor module CRCs match (337 `vendor_boot` and 390 `vendor_dlkm` modules) for MistOS 5.1 Beta 20261025 (the same modules as 20261024 and 20261023), Project Infinity-X 4.1, MistOS 5.0 Alpha 20260914 and the latest builds from Keosh; AOSPA and PenguinOS are not compatible
+- Build: BakaSU 35257 with SUSFS Inline hooks (BakaSU finds all seven SUSFS hooks: execveat, faccessat, input, setresuid, stat, read and reboot) and SUSFS's SELinux-hiding hook, SUSFS v2.3.0, and the module preinit runner built in
+- **Tested on the phone** (POCO F5 Pro, MistOS 5.1 Beta 20261025) by booting this kernel with `fastboot boot`, without flashing it: boots, 385 modules loaded and 0 rejected, root works, SELinux Enforcing, no panics or warnings, BakaSU 35257 built in (UAPI 6), NoMount loaded (`nm version` 22), SUSFS v2.3.0 with its 9 features, BBR, and `/proc/kallsyms` returns 0 for every root-revealing name
+- The BakaSU manager app was not installed on the test phone, so the kernel was checked from the shell; the manager itself was not tried with this kernel
 
 ---
 
 ## Credits
-- **[LF52406](https://github.com/LF52406)**: Equinox Kernel, the base of this edition. Support: [PayPal](https://www.paypal.me/LF52406) · [Patreon](https://patreon.com/InfernalGT) · [Boosty](https://boosty.to/infernalgt/donate)
-- [LineageOS](https://github.com/LineageOS/android_kernel_xiaomi_sm8450) and [Android Common Kernel](https://android.googlesource.com/kernel/common).
-- [BakaSU](https://github.com/Baka-SU/BakaSU) (formerly ReSukiSU), based on [KernelSU](https://github.com/tiann/KernelSU) by **tiann**.
-- [SUSFS](https://gitlab.com/simonpunk/susfs4ksu) by **simonpunk**.
-- [DroidSpaces](https://github.com/ravindu644/Droidspaces-OSS) by **ravindu644**.
-- [NoMount](https://github.com/maxsteeel/nomount) by **maxsteeel**, with a fix by **deref3046**.
-- [AnyKernel3](https://github.com/osm0sis/AnyKernel3) by **osm0sis**.
-- **[Nanairo8890](https://github.com/nanairo8890)**: BakaSU, SUSFS, BBR and NoMount integration into Equinox.
+- **[LF52406](https://github.com/LF52406)**: Equinox Kernel, the base of this edition
+  Support: [PayPal](https://www.paypal.me/LF52406) · [Patreon](https://patreon.com/InfernalGT) · [Boosty](https://boosty.to/infernalgt/donate)
+- [LineageOS](https://github.com/LineageOS/android_kernel_xiaomi_sm8450) and [Android Common Kernel](https://android.googlesource.com/kernel/common)
+- [BakaSU](https://github.com/Baka-SU/BakaSU) (formerly ReSukiSU), based on [KernelSU](https://github.com/tiann/KernelSU) by **tiann**
+- [SUSFS](https://gitlab.com/simonpunk/susfs4ksu) by **simonpunk**
+- [DroidSpaces](https://github.com/ravindu644/Droidspaces-OSS) by **ravindu644**
+- [NoMount](https://github.com/maxsteeel/nomount) by **maxsteeel**, with a fix by **deref3046**
+- [AnyKernel3](https://github.com/osm0sis/AnyKernel3) by **osm0sis**
+- **[Nanairo8890](https://github.com/nanairo8890)**: BakaSU, SUSFS, BBR and NoMount integration into Equinox
