@@ -51,7 +51,7 @@
 extern u32 susfs_ksu_sid;
 extern u32 susfs_priv_app_sid;
 extern struct static_key_false susfs_is_avc_log_spoofing_enabled;
-#endif
+#endif // #ifdef CONFIG_KSU_SUSFS
 
 struct avc_entry {
 	u32			ssid;
