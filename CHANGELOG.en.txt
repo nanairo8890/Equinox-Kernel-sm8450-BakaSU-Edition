@@ -8,6 +8,26 @@ Problems with this edition: report them to Nanairo8890, not to LF52406 or the Ba
 
 ---
 
+## 2.0 (2026-11-10)
+
+New kernel with BakaSU 548d1dda and SUSFS v2.4.0
+The installer, NoMount, DroidSpaces and the rest are the same as 1.8
+
+**BakaSU**
+- BakaSU updated from `516d3e87` to `548d1dda` (`main`, `v4.2.0-rc3-88`, version 35257), still UAPI 6
+  Use the official BakaSU manager (`BakaSU_v4.2.0-rc3_35257-arm64-v8a-release.apk`) or newer
+- Hooks: BakaSU's SUSFS Inline method, as before
+
+**SUSFS**
+- Moves to **v2.4.0**: the core (`fs/susfs.c`) and the hooks (`security/selinux/*`, `kernel/sys.c`, `block/ioprio.c`) were updated
+  The v2.4.0 priority filter stays off: its command is not in BakaSU's manager
+
+**Verified**
+- KMI against clean Equinox: 0 changed CRCs and 0 removed symbols (only `put_pid_ns` is added)
+- Built and checked; not tested by booting on a phone
+
+---
+
 ## 1.8 (2026-11-04)
 
 First release of the BakaSU edition: the kernel of the Equinox FinaSU Edition 1.8 with BakaSU instead of FinaSU as the root driver
