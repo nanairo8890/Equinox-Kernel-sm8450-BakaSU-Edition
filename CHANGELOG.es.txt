@@ -8,6 +8,34 @@ Problemas con esta edición: repórtalos a Nanairo8890, no a LF52406 ni a los de
 
 ---
 
+## 2.0.1 (2026-11-12)
+
+Mismo kernel que 2.0 (BakaSU 548d1dda, SUSFS v2.4.0, NoMount v2.2.0); 2.0.1 solo agrega la ocultación de los tipos de SELinux propios de KernelSU
+
+**Ocultar los tipos de SELinux de KernelSU a las apps**
+- KernelSU crea sus propios tipos en la política de SELinux (`ksu` y `ksu_file`); una app podía confirmar que existían preguntando por ellos a través del sistema de archivos de SELinux (`selinuxfs`), y eso delataba el root
+- Ahora, al aplicar sus reglas, el kernel registra esos dos tipos en la lista de tipos ocultos de SUSFS, que solo se consulta para las apps (uid 10000 o mayor)
+- Para una app, `ksu` y `ksu_file` pasan a responder como inexistentes (EINVAL), igual que un contexto que no está en la política; la resolución de contextos del propio kernel y la concesión de root no cambian, porque esa lista no interviene en las decisiones de SELinux
+- Es el mismo enfoque que ya usan Magisk y LSPosed con sus propios tipos
+
+**No cambia la KMI**
+- El cambio está en el código de KernelSU y no toca símbolos exportados: 0 CRC cambiados y 0 símbolos eliminados frente a Equinox limpio (solo se agrega `put_pid_ns`, igual que 2.0)
+- Los CRC de los módulos del vendor siguen coincidiendo (337 de `vendor_boot` y 390 de `vendor_dlkm`), así que las ROMs compatibles son las mismas que en 2.0
+
+**Qué no arregla**
+- No deja en verde a Duck Detector ni a detectores parecidos: siguen señales que no vienen del kernel, como el TEE (TEESimulator), los tipos de Vector/LSPosed y contextos propios de la ROM
+- Desde el kernel solo se puede ocultar lo que agrega el kernel
+
+**Cómo está hecho**
+- El cambio se aplica como un parche sobre el submódulo de KernelSU al compilar (`scripts/equinox/patches/0001-susfs-hide-ksu-types.patch`), así que el submódulo queda sin tocar (pinned) y no se forkea BakaSU
+
+**Verificado**
+- KMI frente a Equinox limpio: 0 CRC cambiados y 0 símbolos eliminados (solo se agrega `put_pid_ns`)
+- Los CRC de los módulos del vendor coinciden (337 de `vendor_boot` y 390 de `vendor_dlkm`), igual que 2.0
+- Es el mismo cambio de SELinux que en la edición FinaSU, que sí se probó en el teléfono (las apps ven `ksu` y `ksu_file` como inexistentes, con `susfs: hide ksu type ... ret=0` en `dmesg`); esta edición BakaSU todavía no se probó en el teléfono ni se flasheó para esta versión
+
+---
+
 ## 2.0 (2026-11-10)
 
 Kernel nuevo con BakaSU 548d1dda y SUSFS v2.4.0

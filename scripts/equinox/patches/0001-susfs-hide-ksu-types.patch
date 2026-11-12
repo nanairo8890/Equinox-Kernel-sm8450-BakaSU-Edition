@@ -1,0 +1,68 @@
+diff --git a/kernel/selinux/rules.c b/kernel/selinux/rules.c
+index 4544b3d1..658bace8 100644
+--- a/kernel/selinux/rules.c
++++ b/kernel/selinux/rules.c
+@@ -14,6 +14,8 @@
+ #include "ss/services.h"
+ #include "linux/lsm_audit.h" // IWYU pragma: keep
+ #include "xfrm.h"
++#include "ss/policydb.h"
++#include "ss/symtab.h"
+ #include "infra/symbol_resolver.h"
+ 
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0) || defined(KSU_COMPAT_HAS_SELINUX_POLICY_STRUCT)
+@@ -139,6 +141,42 @@ static inline void ksu_unlock_sepolicy_legacy(void)
+ 
+ #endif // KSU_COMPAT_HAS_POLICY_MUTEX
+ 
++#ifdef CONFIG_KSU_SUSFS
++extern int susfs_add_sus_type(const char *secctx, u32 type_value);
++
++/*
++ * Registra los tipos propios de KernelSU en la lista de tipos ocultos de SUSFS.
++ * Solo los manejadores de selinuxfs orientados a apps (uid >= 10000) consultan
++ * esta lista, asi que la resolucion interna de contextos del kernel y la
++ * concesion de root no se ven afectadas: para una app el tipo responde como
++ * inexistente (EINVAL), igual que un contexto stock.
++ */
++static void ksu_susfs_hide_own_types(struct policydb *db)
++{
++    static const struct {
++        const char *name;
++        const char *secctx;
++    } hidden[] = {
++        { KERNEL_SU_DOMAIN, KERNEL_SU_CONTEXT },
++        { KERNEL_SU_FILE, KSU_FILE_CONTEXT },
++    };
++    size_t i;
++
++    for (i = 0; i < ARRAY_SIZE(hidden); i++) {
++        struct type_datum *t = symtab_search(&db->p_types, hidden[i].name);
++
++        if (t && !t->attribute) {
++            int ret = susfs_add_sus_type(hidden[i].secctx, t->value);
++            pr_info("susfs: hide ksu type '%s' value=%u ret=%d\n",
++                    hidden[i].name, t->value, ret);
++        } else {
++            pr_warn("susfs: ksu type '%s' not found, not hidden\n",
++                    hidden[i].name);
++        }
++    }
++}
++#endif
++
+ void apply_kernelsu_rules()
+ {
+     struct policydb *db;
+@@ -309,6 +347,11 @@ void apply_kernelsu_rules()
+     ksu_allow(db, "system_server", KERNEL_SU_DOMAIN, "process", "getpgid");
+     ksu_allow(db, "system_server", KERNEL_SU_DOMAIN, "process", "sigkill");
+ 
++#ifdef CONFIG_KSU_SUSFS
++    // Ocultar los tipos propios de KSU a las consultas de SELinux de las apps
++    ksu_susfs_hide_own_types(db);
++#endif
++
+ #if LINUX_VERSION_CODE >= KERNEL_VERSION(5, 10, 0) || defined(KSU_COMPAT_HAS_POLICY_MUTEX)
+     rcu_assign_pointer(selinux_state.policy, pol);
+     synchronize_rcu();

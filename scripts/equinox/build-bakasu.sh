@@ -29,6 +29,16 @@ done
 [ "$(git -C "$ROOT/KernelSU" rev-parse --is-shallow-repository)" = false ] || { echo '[!] KernelSU/ is a shallow clone'; exit 1; }
 [ "$(readlink "$ROOT/drivers/kernelsu")" = ../KernelSU/kernel ] || { echo '[!] drivers/kernelsu link missing'; exit 1; }
 
+# Apply the SUSFS "hide own KSU sepolicy types" hotfix to the pristine submodule (idempotent).
+# The submodule stays pinned/pristine in git; this patch introduces the change only at build time.
+HOTFIX="$ROOT/scripts/equinox/patches/0001-susfs-hide-ksu-types.patch"
+if git -C "$ROOT/KernelSU" apply --reverse --check "$HOTFIX" 2>/dev/null; then
+    echo "[=] hotfix 0001-susfs-hide-ksu-types already applied"
+else
+    git -C "$ROOT/KernelSU" apply "$HOTFIX" || { echo '[!] cannot apply 0001-susfs-hide-ksu-types.patch'; exit 1; }
+    echo "[+] applied hotfix 0001-susfs-hide-ksu-types"
+fi
+
 rm -rf "$OUT"
 mkdir -p "$OUT"
 "${MAKE[@]}" -s gki_defconfig
