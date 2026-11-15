@@ -21,7 +21,7 @@ Los problemas de esta edición repórtalos a Nanairo, no a LF52406 ni a los desa
   uname, spoof cmdline/bootconfig, open_redirect, log y ocultación de símbolos).
 - **BBR** como control de congestión TCP por defecto (Equinox trae BBR, pero usa CUBIC
   por defecto).
-- **NoMount v2.2.0** de maxsteeel integrado en el kernel. Se usa con el metamódulo oficial de
+- **NoMount v2.3.0** de maxsteeel integrado en el kernel. Se usa con el metamódulo oficial de
   NoMount, que detecta el driver integrado y no carga el suyo. Esta edición hace que las apps a
   las que BakaSU/SUSFS desmonta los módulos vean el sistema original, y oculta NoMount de
   `/sys/module` y `/proc/kallsyms`.
@@ -41,7 +41,7 @@ SYSVIPC/POSIX_MQUEUE. Es el mismo kernel que la edición FinaSU 1.8, con BakaSU 
 - [SUSFS](https://gitlab.com/simonpunk/susfs4ksu) de **simonpunk**.
 - [DroidSpaces](https://github.com/ravindu644/Droidspaces-OSS) de **ravindu644**.
 - [NoMount](https://github.com/maxsteeel/nomount) de **maxsteeel**: redirección de rutas en
-  VFS (v2.2.0); incluye el arreglo `7e7342c` de **deref3046**.
+  VFS (v2.3.0); incluye el arreglo `7e7342c` de **deref3046**.
 - [AnyKernel3](https://github.com/osm0sis/AnyKernel3) de **osm0sis**.
 - **[Nanairo8890](https://github.com/nanairo8890)**: integración de BakaSU, SUSFS, BBR y NoMount en Equinox.
 
@@ -52,7 +52,7 @@ SYSVIPC/POSIX_MQUEUE. Es el mismo kernel que la edición FinaSU 1.8, con BakaSU 
 Equinox Kernel is **LF52406**'s kernel for mondrian. This build is Equinox 5.10.269 modified
 by Nanairo with LF52406's permission: BakaSU (formerly ReSukiSU, based on KernelSU)
 v4.2.0-rc3-86 (35257) replaces KernelSU-Next and is built in with BakaSU's SUSFS Inline hooks,
-SUSFS v2.3.0 uses BakaSU's SUSFS support, TCP defaults to BBR, and maxsteeel's NoMount v2.2.0
+SUSFS v2.3.0 uses BakaSU's SUSFS support, TCP defaults to BBR, and maxsteeel's NoMount v2.3.0
 (which includes deref3046's fix 7e7342c) is built in for the NoMount metamodule. It needs the
 BakaSU manager (35257 or newer). Everything else is Equinox as released, DroidSpaces included;
 it is the same kernel as the FinaSU edition 1.8, with BakaSU instead of FinaSU. All base kernel

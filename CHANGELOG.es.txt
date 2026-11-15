@@ -8,6 +8,35 @@ Problemas con esta edición: repórtalos a Nanairo8890, no a LF52406 ni a los de
 
 ---
 
+## 2.5 (2026-11-15)
+
+NoMount pasa a v2.3.0; BakaSU y SUSFS son los mismos de 2.0.1
+
+**NoMount v2.3.0**
+- El driver integrado pasa de v2.2.0 a v2.3.0 (`7914458`, versión de driver 23, contador 720)
+- Las reglas ahora siguen al inodo del archivo y no al texto de la ruta, así que siguen funcionando si el destino se renombra o se mueve
+- Los archivos redirigidos se abren más rápido: el driver reutiliza un archivo de respaldo ya abierto
+- Arreglos de memoria (una lectura fuera de límites y casos de uso después de liberar) y de seguridad (comprobaciones de LSM al cambiar xattr, bits SUID/SGID quitados en los inodos virtuales)
+- Arreglos de caídas con montajes FUSE y con cgroup2
+- Las reglas cargan más rápido en el arranque
+- Se conservan los cambios de esta edición: las apps a las que se les desmontan los módulos ven el sistema original, y NoMount sigue oculto en `/sys/module` y `/proc/kallsyms`
+- Por qué se actualiza el kernel: el metamódulo v2.3.0 también funciona con un driver más viejo (22 o más nuevo), así que actualizar el kernel no es obligatorio para usarlo, pero los arreglos de arriba están en el driver del kernel, por lo que solo un kernel actualizado los trae, y NoMount pide actualizar juntos el driver y el metamódulo
+- Si NoMount muestra "Bootloop Prevented", se desactivó solo después de un arranque que no terminó (por ejemplo al probar un kernel sin flashearlo): borra el archivo `disable` de `/data/adb/nomount/` y reinicia, o instala de nuevo el módulo de NoMount
+- Actualiza también el metamódulo de NoMount a v2.3.0: NoMount pide actualizar juntos el driver y el metamódulo
+
+**Qué sigue igual**
+- BakaSU `548d1dda` (35257), que no ha publicado nada más nuevo, con el mismo manager
+- SUSFS v2.4.0, la ocultación de los tipos de SELinux de KernelSU de 2.0.1, BBR, DroidSpaces, el filtro de `/proc/kallsyms` y el instalador
+
+**Verificado**
+- Esta edición BakaSU no se arrancó en un teléfono para esta versión; el driver de NoMount es el mismo código que se probó con la edición FinaSU (NoMount 23 (720), reglas del módulo inyectadas y arranque terminado de forma segura), y BakaSU no cambia respecto de 2.0.1
+- KMI frente a Equinox limpio: 0 CRC cambiados y 0 símbolos eliminados (solo se agrega `put_pid_ns`)
+- Los CRC de los módulos del vendor coinciden (337 de `vendor_boot` y 390 de `vendor_dlkm`) con MistOS 5.1 Beta 20261025 y con las 11 últimas builds de Keosh; AOSPA y PenguinOS siguen sin ser compatibles
+- Infinity-X 4.1 no se volvió a revisar en esta versión porque sus módulos ya no están en el equipo de compilación
+- El filtro de `/proc/kallsyms` se comprobó en el kernel compilado: ninguno de los símbolos del driver que quedan visibles delata el root, y NoMount no agrega símbolos visibles nuevos
+
+---
+
 ## 2.0.1 (2026-11-12)
 
 Mismo kernel que 2.0 (BakaSU 548d1dda, SUSFS v2.4.0, NoMount v2.2.0); 2.0.1 solo agrega la ocultación de los tipos de SELinux propios de KernelSU
