@@ -8,6 +8,31 @@ Problemas com esta edição: reporte-os ao Nanairo8890, não ao LF52406 nem aos 
 
 ---
 
+## 2.5.2 (2026-11-19)
+
+O NoMount passa para a v2.3.1
+Todo o resto é igual ao da 2.5.1
+
+**NoMount v2.3.1**
+- O driver embutido passa da v2.3.0 para a v2.3.1 (`dcd77d0`, versão do driver 23, contagem 785); o protocolo continua na v23
+- Correções do kernel vindas do upstream: uma revisão dos caminhos rápidos e do ciclo de vida, tabelas hash maiores para regras e UIDs, operações de exportação de file handles para os arquivos redirecionados, e a limpeza do superbloco movida para `put_super`
+- As mudanças desta edição continuam: os processos que têm os módulos desmontados veem o sistema original, e o NoMount fica oculto de `/sys/module` e `/proc/kallsyms`
+- Atualize também o metamódulo NoMount para a v2.3.1: ele funciona com o driver 2.3.0 e vice-versa, mas o upstream recomenda atualizar os dois juntos
+
+**O que continua igual**
+- BakaSU `5d6d1843` (35261), SUSFS v2.4.0, a ocultação dos tipos de SELinux do KernelSU, BBR, DroidSpaces, o filtro de `/proc/kallsyms` e o instalador
+- A edição FinaSU passa para a 2.5.6 com a mesma atualização do NoMount
+
+**Verificado**
+- Testado no telefone (POCO F5 Pro, MistOS 5.1 Beta 20261025) com um boot via `fastboot boot`, sem gravar nada: carregam 385 módulos, o SELinux está em Enforcing, o root funciona, `nm version` mostra 23 (785), o NoMount carrega, o SUSFS v2.4.0 é inicializado, o `dmesg` não mostra Oops nem panic, e o `/proc/kallsyms` não mostra nenhum nome que denuncie root
+- KMI contra o Equinox limpo: 0 CRCs alterados e 0 símbolos removidos (só `put_pid_ns` é adicionado)
+- Os CRCs dos módulos do vendor coincidem (337 do `vendor_boot` e 390 do `vendor_dlkm`) com o MistOS 5.1 Beta 20261025 e com as 11 builds mais recentes da Keosh; AOSPA e PenguinOS continuam incompatíveis
+- A compilação não mostra avisos nem erros no código do BakaSU, do SUSFS e do NoMount
+- O Infinity-X 4.1 não foi conferido de novo nesta versão porque os módulos dele não estão mais na máquina de compilação
+- O filtro de `/proc/kallsyms` foi conferido no kernel compilado: nenhum símbolo do driver que continua visível denuncia root, e o NoMount não adiciona símbolos visíveis novos
+
+---
+
 ## 2.5.1 (2026-11-15)
 
 O BakaSU passa para `5d6d1843`

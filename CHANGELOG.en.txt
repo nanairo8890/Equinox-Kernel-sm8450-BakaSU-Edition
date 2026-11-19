@@ -8,6 +8,31 @@ Problems with this edition: report them to Nanairo8890, not to LF52406 or the Ba
 
 ---
 
+## 2.5.2 (2026-11-19)
+
+NoMount goes to v2.3.1
+Everything else is the same as 2.5.1
+
+**NoMount v2.3.1**
+- The built-in driver goes from v2.3.0 to v2.3.1 (`dcd77d0`, driver version 23, count 785); the wire protocol is still v23
+- Kernel fixes from upstream: a hot-path and lifetime pass, larger hash tables for rules and UIDs, file handle export operations for redirected files, and superblock cleanup moved to `put_super`
+- This edition's changes stay: processes whose modules are umounted see the stock filesystem, and NoMount is hidden from `/sys/module` and `/proc/kallsyms`
+- Update the NoMount metamodule to v2.3.1 too: it works with the 2.3.0 driver and the other way round, but upstream recommends updating both together
+
+**What stays the same**
+- BakaSU `5d6d1843` (35261), SUSFS v2.4.0, the hiding of KernelSU's SELinux types, BBR, DroidSpaces, the `/proc/kallsyms` filter and the installer
+- The FinaSU edition goes to 2.5.6 with the same NoMount update
+
+**Verified**
+- Tested on the phone (POCO F5 Pro, MistOS 5.1 Beta 20261025) with one boot from `fastboot boot`, nothing flashed: 385 modules load, SELinux is Enforcing, root works, `nm version` reports 23 (785), NoMount loads, SUSFS v2.4.0 is initialized, `dmesg` shows no Oops or panic, and `/proc/kallsyms` shows none of the root-revealing names
+- KMI against clean Equinox: 0 changed CRCs and 0 removed symbols (only `put_pid_ns` is added)
+- Vendor module CRCs match (337 from `vendor_boot` and 390 from `vendor_dlkm`) for MistOS 5.1 Beta 20261025 and for the 11 latest Keosh builds; AOSPA and PenguinOS are still not compatible
+- The build shows no warnings or errors in the BakaSU, SUSFS and NoMount code
+- Infinity-X 4.1 was not rechecked in this version because its modules are no longer on the build machine
+- The `/proc/kallsyms` filter was checked on the built kernel: none of the driver symbols left visible reveals root, and NoMount adds no new visible symbol
+
+---
+
 ## 2.5.1 (2026-11-15)
 
 BakaSU goes to `5d6d1843`
