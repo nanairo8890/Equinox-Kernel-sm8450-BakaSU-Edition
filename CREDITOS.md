@@ -13,8 +13,8 @@ Los problemas de esta edición repórtalos a Nanairo, no a LF52406 ni a los desa
 
 ## Qué cambia respecto de Equinox oficial
 
-- **BakaSU** (antes ReSukiSU) v4.2.0-rc3-90 (35261) en lugar de KernelSU-Next, integrado en el
-  kernel con el método de hooks SUSFS Inline de BakaSU. Necesita el manager de BakaSU (35261 o
+- **BakaSU** (antes ReSukiSU) v4.2.0-rc3-113 (35284) en lugar de KernelSU-Next, integrado en el
+  kernel con el método de hooks SUSFS Inline de BakaSU. Necesita el manager de BakaSU (35284 o
   más nuevo, con la firma oficial de BakaSU).
 - **SUSFS v2.3.0** desde la rama `gki-android12-5.10` de simonpunk, con el soporte de SUSFS
   de BakaSU y todas las funciones activas (sus_path, sus_mount, sus_kstat, sus_map, spoof
@@ -51,10 +51,10 @@ SYSVIPC/POSIX_MQUEUE. Es el mismo kernel que la edición FinaSU 1.8, con BakaSU 
 
 Equinox Kernel is **LF52406**'s kernel for mondrian. This build is Equinox 5.10.269 modified
 by Nanairo with LF52406's permission: BakaSU (formerly ReSukiSU, based on KernelSU)
-v4.2.0-rc3-90 (35261) replaces KernelSU-Next and is built in with BakaSU's SUSFS Inline hooks,
+v4.2.0-rc3-113 (35284) replaces KernelSU-Next and is built in with BakaSU's SUSFS Inline hooks,
 SUSFS v2.3.0 uses BakaSU's SUSFS support, TCP defaults to BBR, and maxsteeel's NoMount v2.3.1
 (which includes deref3046's fix 7e7342c) is built in for the NoMount metamodule. It needs the
-BakaSU manager (35261 or newer). Everything else is Equinox as released, DroidSpaces included;
+BakaSU manager (35284 or newer). Everything else is Equinox as released, DroidSpaces included;
 it is the same kernel as the FinaSU edition 1.8, with BakaSU instead of FinaSU. All base kernel
 work is LF52406's; please report issues with this edition to Nanairo, not to LF52406 or the
 BakaSU developers.

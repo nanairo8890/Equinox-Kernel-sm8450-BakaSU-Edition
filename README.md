@@ -16,7 +16,7 @@
 > **This repository is the BakaSU edition of Equinox**, made by **Nanairo** with
 > LF52406's permission. It is Equinox 5.10.269 as released, with these changes:
 >
-> - **[BakaSU](https://github.com/Baka-SU/BakaSU)** (formerly ReSukiSU, a fork of [KernelSU](https://github.com/tiann/KernelSU)) instead of KernelSU-Next, as the `KernelSU/` submodule at `5d6d1843` (`v4.2.0-rc3-90`, version 35261), built into the kernel with BakaSU's SUSFS Inline Hook method. Use the **BakaSU manager** from the release (`BakaSU_v4.2.0-rc3_35261-arm64-v8a-release.apk`, package `com.resukisu.resukisu`, built by BakaSU's CI from the same commit) or a newer one: the kernel trusts the official BakaSU manager signature, which is built into BakaSU. BakaSU uses UAPI 6.
+> - **[BakaSU](https://github.com/Baka-SU/BakaSU)** (formerly ReSukiSU, a fork of [KernelSU](https://github.com/tiann/KernelSU)) instead of KernelSU-Next, as the `KernelSU/` submodule at `de80463b` (`v4.2.0-rc3-113`, version 35284), built into the kernel with BakaSU's SUSFS Inline Hook method. Use the **BakaSU manager** from the release (`BakaSU_v4.2.0-rc3_35284-arm64-v8a-release.apk`, package `com.resukisu.resukisu`, built by BakaSU's CI from the same commit) or a newer one: the kernel trusts the official BakaSU manager signature, which is built into BakaSU. BakaSU uses UAPI 6.
 > - **SUSFS v2.3.0** from [simonpunk's](https://gitlab.com/simonpunk/susfs4ksu) `gki-android12-5.10` branch at `eb95da0`, through BakaSU's SUSFS support.
 > - **BBR** as the default TCP congestion control.
 > - **[NoMount](https://github.com/maxsteeel/nomount) v2.3.1** by maxsteeel built in (`fs/nomount`), which includes deref3046's fix. BakaSU has no built-in NoMount backend, so use it with the **official NoMount metamodule** (v2.3.1), which detects the built-in driver and does not load its own module. Processes that BakaSU/SUSFS umount modules for see the stock filesystem, and NoMount is hidden from `/sys/module` and `/proc/kallsyms`.
@@ -27,7 +27,7 @@
 > The same kernel with FinaSU instead of BakaSU is the [Equinox FinaSU Edition](https://github.com/nanairo8890/Equinox-Kernel-sm8450-FinaSU-Edition).
 > Report problems with this edition to Nanairo8890, not to LF52406 or the BakaSU developers.
 >
-> Build: `CLANG_DIR=/path/to/clang/bin scripts/equinox/build-bakasu.sh`, then `scripts/equinox/package-bakasu.sh` · Changes: [release notes](scripts/equinox/release-notes/5.10.269-bakasu-2.5.2.md) · Changelog: [English](CHANGELOG.en.txt) · [Español](CHANGELOG.es.txt) · [Português (Brasil)](CHANGELOG.pt-BR.txt) · [Русский](CHANGELOG.ru.txt)
+> Build: `CLANG_DIR=/path/to/clang/bin scripts/equinox/build-bakasu.sh`, then `scripts/equinox/package-bakasu.sh` · Changes: [release notes](scripts/equinox/release-notes/5.10.269-bakasu-2.5.3.md) · Changelog: [English](CHANGELOG.en.txt) · [Español](CHANGELOG.es.txt) · [Português (Brasil)](CHANGELOG.pt-BR.txt) · [Русский](CHANGELOG.ru.txt)
 
 ---
 
@@ -35,10 +35,10 @@
 
 | Component | Current |
 |:--|:--|
-| **Version** | `2.5.2` |
+| **Version** | `2.5.3` |
 | **Linux** | `5.10.269-Nanairo-BakaSU` |
 | **Compatibility** | MistOS and the AOSP ROMs listed in [Other AOSP ROMs](#other-aosp-roms); tested on MistOS 5.1 Beta 20261025 (`fastboot boot`) |
-| **BakaSU** | `v4.2.0-rc3-90` (35261), built in · SUSFS Inline hooks |
+| **BakaSU** | `v4.2.0-rc3-113` (35284), built in · SUSFS Inline hooks |
 | **SUSFS** | `2.3.0` (`eb95da0`) |
 | **NoMount** | `v2.3.1` built in · with the NoMount metamodule |
 | **DroidSpaces** | Supported |
@@ -63,6 +63,13 @@
 
 ## Latest Changes
 
+### 2.5.3
+
+- BakaSU updated from `5d6d1843` to `de80463b` (`v4.2.0-rc3-113`, 35284) and SUSFS from `eb95da0` to `784ac9e6` (still v2.4.0); use the BakaSU 35284 manager from the release
+- BakaSU kernel fixes (SELinux hide parsing, generation tracking, a sid regression, `logd` access, a detection point); BakaSU now hides its own SELinux types through its SUSFS selinux_hide, so the 2.0.1 build-time patch is gone
+- SUSFS adds `sus_path_uid_filter`, makes `priority_uid_filter` its own feature and reworks selinux_hide
+- Same NoMount v2.3.1, KMI, installer and ROM compatibility as 2.5.2
+
 ### 2.5.2
 
 - NoMount updated from `v2.3.0` to `v2.3.1` (driver version 23, count 785): upstream kernel fixes (hot-path and lifetime pass, larger rule and UID hash tables, file handle export for redirected files); update the NoMount metamodule to v2.3.1 too
@@ -86,11 +93,11 @@
 
 Builds are published through **GitHub Releases**, with the SHA256 of each file on the release page.
 
-**Current package:** `Equinox-5.10.269-BakaSU-2.5.2-mondrian.zip`
+**Current package:** `Equinox-5.10.269-BakaSU-2.5.3-mondrian.zip`
 
 Download the release asset and flash the AnyKernel3 ZIP using a compatible recovery or kernel flasher. The ZIP only replaces the kernel `Image`, after checking that the ROM's vendor modules accept it; if you update the ROM, flash it again afterwards. Install the BakaSU manager from the release to manage root, modules and SUSFS, and the NoMount metamodule to mount modules with NoMount.
 
-Not sure whether your ROM is compatible? Flash `Equinox-5.10.269-BakaSU-2.5.2-mondrian-checkonly.zip` first: it runs the same check and flashes nothing.
+Not sure whether your ROM is compatible? Flash `Equinox-5.10.269-BakaSU-2.5.3-mondrian-checkonly.zip` first: it runs the same check and flashes nothing.
 
 > GitHub-generated `Source code` archives are not flashable kernel packages.
 

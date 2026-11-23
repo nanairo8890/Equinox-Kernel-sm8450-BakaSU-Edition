@@ -8,6 +8,36 @@ Problemas com esta edição: reporte-os ao Nanairo8890, não ao LF52406 nem aos 
 
 ---
 
+## 2.5.3 (2026-11-23)
+
+O BakaSU passa para `de80463b` e o SUSFS para `784ac9e6`
+Todo o resto é igual ao da 2.5.2
+
+**BakaSU**
+- O BakaSU passa de `5d6d1843` para `de80463b` (`v4.2.0-rc3-113`, versão 35284), continua no UAPI 6
+  Gerenciador oficial `BakaSU_v4.2.0-rc3_35284-arm64-v8a-release.apk`, do CI do BakaSU, com a mesma assinatura
+- Correções de kernel do BakaSU: a análise da política do selinux_hide agora segue o KernelSU original, o acompanhamento de gerações do SELinux ao atualizar a política, uma regressão em que mais de um sid apontava para o mesmo contexto, permissão para o `logd` ler os atributos dos processos root e um ponto de detecção causado pelos commits do SUSFS que são pulados
+- O BakaSU agora esconde seus próprios tipos de SELinux pelo selinux_hide do SUSFS, então o patch da 2.0.1 que fazia isso na compilação não existe mais
+
+**SUSFS 784ac9e6** (continua na v2.4.0)
+- Recurso novo `sus_path_uid_filter`, e o `priority_uid_filter` passa a ser um recurso próprio
+- selinux_hide refeito: volta ao mecanismo de hash mais seguro com comparação completa da tupla, e o registro de tipos e regras ocultos tem limite de frequência
+- As mudanças do SUSFS foram mescladas nesta edição com uma mesclagem de três vias contra um Equinox limpo
+
+**O que continua igual**
+- NoMount v2.3.1, BBR, DroidSpaces, o filtro de `/proc/kallsyms` e o instalador
+- Atualize o metamódulo do NoMount apenas se você ainda não estava na v2.3.1
+
+**Verificado**
+- KMI em relação ao Equinox limpo: 0 CRCs alterados e 0 símbolos removidos (apenas `put_pid_ns` é adicionado)
+- Os CRCs dos módulos do vendor coincidem (337 de `vendor_boot` e 390 de `vendor_dlkm`) com o MistOS 5.1 Beta 20261025 e com as 11 últimas builds da Keosh; AOSPA e PenguinOS continuam não compatíveis
+- A compilação não mostra avisos nem erros no código do BakaSU, do SUSFS e do NoMount
+- O filtro de `/proc/kallsyms` foi verificado no kernel compilado: nenhum símbolo do driver que continua visível revela root, e o NoMount não adiciona símbolos visíveis novos
+- Ainda não foi testado iniciando em um telefone
+- O Infinity-X 4.1 não foi verificado de novo nesta versão porque seus módulos não estão mais na máquina de compilação
+
+---
+
 ## 2.5.2 (2026-11-19)
 
 O NoMount passa para a v2.3.1
